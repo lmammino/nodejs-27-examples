@@ -21,6 +21,26 @@ For the test runner example:
 node --test 05-core-upgrades/test-mocks.js
 ```
 
+To rerun the tests when files change:
+
+```bash
+node --test --watch 05-core-upgrades/test-mocks.js
+```
+
+To try the Permission Model's environment-variable filtering, quote the wildcard
+patterns so the shell passes them to Node.js unchanged:
+
+```bash
+SECRET_KEY=super-secret APP_PORT=3000 \
+  node --permission --allow-env='PUBLIC_*,APP_*' \
+  --input-type=module -e 'console.log({ port: process.env.APP_PORT, secret: process.env.SECRET_KEY })'
+# { port: '3000', secret: undefined }
+```
+
+The TCP server example handles one connection and then closes. If you extend it
+with work awaited inside the connection loop, connections can buffer without
+bound. Set `server.maxConnections` explicitly to limit concurrent connections.
+
 ## Structure
 
 | Folder | Article section |
