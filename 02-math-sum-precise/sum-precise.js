@@ -1,6 +1,6 @@
-const cartPrices = [0.1, 0.2, 0.3]
+const cartPrices = [129.99, 49.99, 349.95]
 console.log(Math.sumPrecise(cartPrices))
-// 0.6
+// 529.93
 
 const ledger = [1e20, 0.1, -1e20]
 console.log(Math.sumPrecise(ledger))

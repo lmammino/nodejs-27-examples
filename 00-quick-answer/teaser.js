@@ -1,9 +1,9 @@
 const items = ['Keyboard', 'Mouse', 'Monitor']
-const prices = [0.1, 0.2, 0.3]
+const prices = [129.99, 49.99, 349.95]
 
 const lines = Iterator.zipKeyed({ item: items, price: prices })
   .map(({ item, price }) => `${item} ($${price.toFixed(2)})`)
   .join(', ')
 
 console.log(`${lines} -> Total: $${Math.sumPrecise(prices)}`)
-// Keyboard ($0.10), Mouse ($0.20), Monitor ($0.30) -> Total: $0.6
+// Keyboard ($129.99), Mouse ($49.99), Monitor ($349.95) -> Total: $529.93

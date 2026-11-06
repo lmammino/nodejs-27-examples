@@ -1,9 +1,9 @@
 // Node.js 26 and earlier - floating-point drift in action
-const cartPrices = [0.1, 0.2, 0.3]
+const cartPrices = [129.99, 49.99, 349.95]
 const naiveTotal = cartPrices.reduce((sum, price) => sum + price, 0)
 
 console.log(naiveTotal)
-// 0.6000000000000001 (!)
+// 529.9300000000001 (!)
 
 // Even worse: catastrophic cancellation when large and small numbers mix
 const ledger = [1e20, 0.1, -1e20]
