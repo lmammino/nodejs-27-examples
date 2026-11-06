@@ -1,0 +1,16 @@
+{
+  "name": "nodejs-27-examples",
+  "version": "1.0.0",
+  "description": "Code examples for the article 'What's new in Node.js 27' on nodejsdesignpatterns.com",
+  "type": "module",
+  "engines": {
+    "node": ">=27.0.0-alpha.0"
+  },
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lmammino/nodejs-27-examples.git"
+  },
+  "homepage": "https://nodejsdesignpatterns.com/blog/whats-new-in-nodejs-27/"
+}
