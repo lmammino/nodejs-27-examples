@@ -47,7 +47,7 @@ bound. Set `server.maxConnections` explicitly to limit concurrent connections.
 | --- | --- |
 | `00-quick-answer/` | [Quick Answer: what's new in Node.js 27](https://nodejsdesignpatterns.com/blog/whats-new-in-nodejs-27/#quick-answer-whats-new-in-nodejs-27) |
 | `01-iterators/` | [New Iterator superpower: `zip`, `zipKeyed`, `join`, and `includes`](https://nodejsdesignpatterns.com/blog/whats-new-in-nodejs-27/#new-iterator-superpower-zip-zipkeyed-join-and-includes) |
-| `02-math-sum-precise/` | [Goodbye `0.30000000000000004`: `Math.sumPrecise()`](https://nodejsdesignpatterns.com/blog/whats-new-in-nodejs-27/#goodbye-030000000000000004-mathsumprecise) |
+| `02-math-sum-precise/` | [More accurate sums with `Math.sumPrecise()`](https://nodejsdesignpatterns.com/blog/whats-new-in-nodejs-27/#more-accurate-sums-with-mathsumprecise) |
 | `03-net-promises/` | [`node:net/promises` and async-iterable TCP servers](https://nodejsdesignpatterns.com/blog/whats-new-in-nodejs-27/#nodenetpromises-and-async-iterable-tcp-servers) |
 | `04-vfs/` | [Virtual File System (`node:vfs`) is now unflagged](https://nodejsdesignpatterns.com/blog/whats-new-in-nodejs-27/#virtual-file-system-nodevfs-is-now-unflagged) |
 | `05-core-upgrades/` | [More Node.js Core upgrades: `fs`, Permissions, Test Runner, and HTTP](https://nodejsdesignpatterns.com/blog/whats-new-in-nodejs-27/#more-nodejs-core-upgrades-fs-permissions-test-runner-and-http) |
