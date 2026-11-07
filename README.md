@@ -37,22 +37,39 @@ SECRET_KEY=super-secret APP_PORT=3000 \
 # { port: '3000', secret: undefined }
 ```
 
-The TCP server example connects three clients concurrently. Each handler waits
-100 ms to simulate asynchronous I/O. The connection loop dispatches handlers
-without awaiting them, so the three waits overlap. Each rejected handler promise
-is caught and its socket is destroyed. The server caps open connections at ten,
-and stops listening after the clients finish.
+## TCP chat example
 
-You should see three `Handler started` messages before the first `Response queued`
-message. To see the sequential counter-example, replace the dispatch and its
-`.catch()` inside the loop with `await handleConnection(socket)`. Now each handler
-finishes before the next starts. A handler that waits for its client to disconnect
-could delay every connection behind it.
+Start the server with Node.js 27:
 
-The server iterator yields TCP connections, not application-level requests. The
-server keeps accepting connections while the loop waits, so slow consumers can
-buffer connections without bound unless you set `server.maxConnections`.
-Choose an appropriate resource limit even when handlers run concurrently.
+```bash
+node 03-net-promises/net-promises.js
+```
+
+In two or three other terminals, connect with netcat:
+
+```bash
+nc 127.0.0.1 8124
+```
+
+Each client receives its connection ID (remote address and port). Type a message
+and press Enter to send it to all other clients as `clientId > message`. The
+server does not echo messages back to their sender. Press Ctrl+C in a client
+terminal to disconnect, or in the server terminal to close all connections.
+
+The server tracks active sockets in a map, reads complete lines with `readline`,
+and removes clients when their handlers finish. The connection loop dispatches
+handlers without awaiting them, so clients can stay connected concurrently.
+Socket errors and rejected handler promises are handled, and the server caps
+open connections at ten.
+
+To try the wrong, sequential version, replace the dispatch and its `.catch()` in
+the outer connection loop with `await handleConnection(socket)`. Only the first
+client gets a handler until it disconnects. The later clients never join the map
+while it remains connected, so the first client's messages have no recipients.
+
+The server iterator yields connections, not individual chat messages. The server
+keeps accepting connections while the loop waits, so slow consumers can buffer
+connections without bound unless you set `server.maxConnections`.
 
 ## Structure
 
