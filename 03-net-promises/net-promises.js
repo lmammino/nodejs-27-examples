@@ -7,7 +7,7 @@ const server = await listen({
   signal: ac.signal,
 })
 
-// Consume incoming connections with for await...of!
+// One-client demo: stop accepting connections after the first response.
 const serverLoop = (async () => {
   for await (const socket of server) {
     socket.end('Hello from async-iterable TCP server!\n')

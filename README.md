@@ -37,9 +37,25 @@ SECRET_KEY=super-secret APP_PORT=3000 \
 # { port: '3000', secret: undefined }
 ```
 
-The TCP server example handles one connection and then closes. If you extend it
-with work awaited inside the connection loop, connections can buffer without
-bound. Set `server.maxConnections` explicitly to limit concurrent connections.
+The TCP server example deliberately handles one connection, then stops accepting
+new connections. `socket.end()` starts sending the response without waiting for
+the socket to close.
+
+When extending this example, remember that `for await (const socket of server)`
+yields connections, not individual application-level requests. Calling
+`await handleConnection(socket)` inside the loop serializes the handlers. If a
+handler waits until its client disconnects, a long-lived connection delays every
+connection behind it.
+
+For concurrent handling, start each async handler without awaiting it in the
+loop, for example with `void handleConnection(socket).catch(...)`. Handle each
+rejection and clean up the socket, for example by logging the error and calling
+`socket.destroy()`.
+
+The server keeps accepting connections while the loop waits, so connections can
+buffer without bound. Set `server.maxConnections` explicitly to cap open
+connections and choose a limit appropriate to your workload, including when
+handlers run concurrently.
 
 ## Structure
 
