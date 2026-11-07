@@ -1,28 +1,29 @@
 import { createServer } from 'node:http'
+import { once } from 'node:events'
+import assert from 'node:assert/strict'
 
 const server = createServer((req, res) => {
-  console.log(
-    'Object.getPrototypeOf(req.headers):',
-    Object.getPrototypeOf(req.headers),
+  assert.strictEqual(Object.getPrototypeOf(req.headers), null)
+  assert.throws(() => req.headers.hasOwnProperty('authorization'), TypeError)
+
+  // Check for the header without relying on Object.prototype.
+  const hasAuthorization = Object.hasOwn(req.headers, 'authorization')
+  res.end(
+    hasAuthorization
+      ? 'Authorization header present'
+      : 'No authorization header',
   )
-
-  // Throws in Node.js 27: TypeError: req.headers.hasOwnProperty is not a function
-  // if (req.headers.hasOwnProperty('authorization')) { ... }
-
-  // Safe in all modern Node.js versions:
-  if (Object.hasOwn(req.headers, 'authorization')) {
-    res.end('Authorized\n')
-    return
-  }
-
-  res.end('Anonymous\n')
 })
 
-server.listen(0, '127.0.0.1', async () => {
+server.listen(0, '127.0.0.1')
+await once(server, 'listening')
+
+try {
   const { port } = server.address()
   const response = await fetch(`http://127.0.0.1:${port}`, {
-    headers: { authorization: 'Bearer token' },
+    headers: { authorization: 'Bearer example' },
   })
-  console.log('Response:', (await response.text()).trim())
+  console.log(await response.text()) // Authorization header present
+} finally {
   server.close()
-})
+}

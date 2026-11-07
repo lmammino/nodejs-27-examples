@@ -32,10 +32,19 @@ patterns so the shell passes them to Node.js unchanged:
 
 ```bash
 SECRET_KEY=super-secret APP_PORT=3000 \
-  node --permission --allow-env='PUBLIC_*,APP_*' \
-  --input-type=module -e 'console.log({ port: process.env.APP_PORT, secret: process.env.SECRET_KEY })'
+  node --permission --allow-env='PUBLIC_*,APP_*' 05-core-upgrades/permissions-env.js
 # { port: '3000', secret: undefined }
 ```
+
+To run the mounted VFS entry point:
+
+```bash
+node --vfs-load=04-vfs/bundle
+# Hello from the VFS bundle
+```
+
+The HTTP headers example asserts that the old `hasOwnProperty()` call throws and
+then checks header presence with `Object.hasOwn()`. It does not validate credentials.
 
 ## TCP chat example
 
