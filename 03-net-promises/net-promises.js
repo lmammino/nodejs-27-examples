@@ -1,4 +1,5 @@
 import { connect, listen } from 'node:net/promises'
+import { setTimeout as delay } from 'node:timers/promises'
 
 const ac = new AbortController()
 const server = await listen({
@@ -6,22 +7,40 @@ const server = await listen({
   host: '127.0.0.1',
   signal: ac.signal,
 })
+server.maxConnections = 10
 
-// One-client demo: stop accepting connections after the first response.
+async function handleConnection(socket) {
+  console.log('Handler started')
+  await delay(100) // Simulate waiting for a database or another service.
+  socket.end('Hello from async-iterable TCP server!\n')
+  console.log('Response queued')
+}
+
 const serverLoop = (async () => {
   for await (const socket of server) {
-    socket.end('Hello from async-iterable TCP server!\n')
-    ac.abort() // close server after serving one connection
+    // Start the handler and immediately advance to the next connection.
+    void handleConnection(socket).catch((error) => {
+      console.error('Connection handler failed:', error)
+      socket.destroy()
+    })
   }
 })()
 
-const client = await connect({
-  port: server.address().port,
-  host: '127.0.0.1',
-})
+try {
+  // Connect three clients concurrently.
+  await Promise.all(
+    [1, 2, 3].map(async (id) => {
+      const client = await connect({
+        port: server.address().port,
+        host: '127.0.0.1',
+      })
 
-for await (const chunk of client) {
-  console.log('Received:', chunk.toString().trim())
+      for await (const chunk of client) {
+        console.log(`Client ${id}:`, chunk.toString().trim())
+      }
+    }),
+  )
+} finally {
+  ac.abort()
+  await serverLoop
 }
-
-await serverLoop

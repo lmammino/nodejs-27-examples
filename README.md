@@ -37,25 +37,22 @@ SECRET_KEY=super-secret APP_PORT=3000 \
 # { port: '3000', secret: undefined }
 ```
 
-The TCP server example deliberately handles one connection, then stops accepting
-new connections. `socket.end()` starts sending the response without waiting for
-the socket to close.
+The TCP server example connects three clients concurrently. Each handler waits
+100 ms to simulate asynchronous I/O. The connection loop dispatches handlers
+without awaiting them, so the three waits overlap. Each rejected handler promise
+is caught and its socket is destroyed. The server caps open connections at ten,
+and stops listening after the clients finish.
 
-When extending this example, remember that `for await (const socket of server)`
-yields connections, not individual application-level requests. Calling
-`await handleConnection(socket)` inside the loop serializes the handlers. If a
-handler waits until its client disconnects, a long-lived connection delays every
-connection behind it.
+You should see three `Handler started` messages before the first `Response queued`
+message. To see the sequential counter-example, replace the dispatch and its
+`.catch()` inside the loop with `await handleConnection(socket)`. Now each handler
+finishes before the next starts. A handler that waits for its client to disconnect
+could delay every connection behind it.
 
-For concurrent handling, start each async handler without awaiting it in the
-loop, for example with `void handleConnection(socket).catch(...)`. Handle each
-rejection and clean up the socket, for example by logging the error and calling
-`socket.destroy()`.
-
-The server keeps accepting connections while the loop waits, so connections can
-buffer without bound. Set `server.maxConnections` explicitly to cap open
-connections and choose a limit appropriate to your workload, including when
-handlers run concurrently.
+The server iterator yields TCP connections, not application-level requests. The
+server keeps accepting connections while the loop waits, so slow consumers can
+buffer connections without bound unless you set `server.maxConnections`.
+Choose an appropriate resource limit even when handlers run concurrently.
 
 ## Structure
 
